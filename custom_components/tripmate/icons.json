@@ -1,0 +1,49 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "travelling": {
+        "default": "mdi:home",
+        "state": {
+          "on": "mdi:bag-suitcase"
+        }
+      }
+    },
+    "calendar": {
+      "trips": {
+        "default": "mdi:calendar-month"
+      }
+    },
+    "sensor": {
+      "current_trip": {
+        "default": "mdi:bag-suitcase"
+      },
+      "current_trip_end": {
+        "default": "mdi:calendar-end"
+      },
+      "next_trip": {
+        "default": "mdi:airplane-takeoff"
+      },
+      "next_trip_start": {
+        "default": "mdi:calendar-start"
+      },
+      "upcoming_trips": {
+        "default": "mdi:calendar-multiple"
+      },
+      "trips": {
+        "default": "mdi:map-marker-path"
+      },
+      "nights": {
+        "default": "mdi:bed"
+      },
+      "flights": {
+        "default": "mdi:airplane"
+      },
+      "distance": {
+        "default": "mdi:map-marker-distance"
+      },
+      "countries": {
+        "default": "mdi:earth"
+      }
+    }
+  }
+}

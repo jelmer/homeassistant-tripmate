@@ -1,0 +1,96 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to tripmate",
+        "description": "Enter the address of the tripmate web UI, including any base path. For example: {example_url}",
+        "data": {
+          "url": "URL",
+          "username": "Username",
+          "password": "Password"
+        },
+        "data_description": {
+          "username": "Only needed when tripmate sits behind a reverse proxy that asks for HTTP basic auth.",
+          "password": "The password that goes with the username."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure tripmate",
+        "description": "Enter the new address of the tripmate web UI, including any base path. For example: {example_url}",
+        "data": {
+          "url": "URL",
+          "username": "Username",
+          "password": "Password"
+        },
+        "data_description": {
+          "username": "Only needed when tripmate sits behind a reverse proxy that asks for HTTP basic auth.",
+          "password": "The password that goes with the username."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Sign in to tripmate again",
+        "description": "The credentials for {url} were refused. Enter ones the reverse proxy in front of tripmate accepts.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Enter an http:// or https:// URL without credentials or a query string.",
+      "username_required": "A password needs a username to go with it.",
+      "invalid_auth": "The username and password were refused.",
+      "cannot_connect": "Unable to connect to tripmate at that address.",
+      "invalid_response": "Something answered at that address, but it does not look like tripmate."
+    },
+    "abort": {
+      "already_configured": "This tripmate instance is already configured.",
+      "reconfigure_successful": "The tripmate address has been updated.",
+      "reauth_successful": "The credentials have been updated."
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "travelling": {
+        "name": "Travelling"
+      }
+    },
+    "calendar": {
+      "trips": {
+        "name": "Trips"
+      }
+    },
+    "sensor": {
+      "current_trip": {
+        "name": "Current trip"
+      },
+      "current_trip_end": {
+        "name": "Current trip end"
+      },
+      "next_trip": {
+        "name": "Next trip"
+      },
+      "next_trip_start": {
+        "name": "Next trip start"
+      },
+      "upcoming_trips": {
+        "name": "Upcoming trips"
+      },
+      "trips": {
+        "name": "Total trips"
+      },
+      "nights": {
+        "name": "Nights away"
+      },
+      "flights": {
+        "name": "Flights"
+      },
+      "distance": {
+        "name": "Distance flown"
+      },
+      "countries": {
+        "name": "Countries"
+      }
+    }
+  }
+}

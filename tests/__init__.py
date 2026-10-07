@@ -105,9 +105,9 @@ RESERVATIONS = [FLIGHT_TO_TOKYO, HOTEL_IN_KYOTO, TRAIN_TO_ROTTERDAM]
 STATS = {
     "trips": 4,
     "nights": 18,
-    "flights": 3,
-    "flights_unknown_route": 0,
-    "distance_km": 13284,
+    "flights": {"journeys": 3, "unknown_route": 0, "distance_km": 13284},
+    "trains": {"journeys": 2, "unknown_route": 1, "distance_km": 57},
+    "travel": {"journeys": 5, "unknown_route": 1, "distance_km": 13341},
     "countries": ["GB", "JP", "NL", "PT"],
     "cost": {},
 }

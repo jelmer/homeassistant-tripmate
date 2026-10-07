@@ -152,7 +152,34 @@ async def test_upcoming_trips(
         (
             "sensor.tripmate_distance_flown",
             "13284",
-            {"unit_of_measurement": "km", "device_class": "distance"},
+            {
+                "unit_of_measurement": "km",
+                "device_class": "distance",
+                "unknown_route": 0,
+            },
+        ),
+        (
+            "sensor.tripmate_train_journeys",
+            "2",
+            {"unit_of_measurement": "journeys"},
+        ),
+        (
+            "sensor.tripmate_distance_by_train",
+            "57",
+            {
+                "unit_of_measurement": "km",
+                "device_class": "distance",
+                "unknown_route": 1,
+            },
+        ),
+        (
+            "sensor.tripmate_distance_travelled",
+            "13341",
+            {
+                "unit_of_measurement": "km",
+                "device_class": "distance",
+                "unknown_route": 1,
+            },
         ),
         (
             "sensor.tripmate_countries",

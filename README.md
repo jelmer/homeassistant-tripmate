@@ -23,8 +23,11 @@ trip.
 | Total trips | Every trip tripmate knows, past and future |
 | Nights away | Nights away from home, over every trip |
 | Flights | Flights, over every trip |
-| Distance flown | Distance flown, over every trip |
-| Countries | Countries flown from or to, over every trip |
+| Distance flown | Kilometres flown, over every trip |
+| Train journeys | Train journeys, over every trip |
+| Distance by train | Kilometres by train, over every trip |
+| Distance travelled | Kilometres by plane, train, bus and ferry, over every trip |
+| Countries | Countries any reservation started or ended in, over every trip |
 | Trips | Calendar; one all-day event per trip |
 
 A trip is under way from its first day up to and including its last, going
@@ -52,8 +55,15 @@ one country to "Trip to the US"; its API does not say enough to do the
 same here.
 
 "Countries" lists the ISO 3166-1 alpha-2 codes of the countries in a
-`countries` attribute. Like "Distance flown" it only knows about flights
-between airports tripmate could place.
+`countries` attribute.
+
+The distances are great-circle, between the places tripmate could put on
+the map: airports by their IATA code, stations and terminals by the
+coordinates in the reservation or from geocoding their name. A journey
+between places it could not place still counts as a journey but adds
+nothing to the distance. Each distance sensor says how many of those it
+left out in an `unknown_route` attribute; while that is not zero the
+distance is a lower bound.
 
 ### Examples
 

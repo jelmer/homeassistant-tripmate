@@ -137,8 +137,8 @@ async def test_reservations(
             provider="ANA",
             reservation_number="J7K2LM",
             # Without a time zone, as tripmate only reports the local time.
-            start=datetime(2026, 9, 28, 19, 0),  # noqa: DTZ001
-            end=datetime(2026, 9, 29, 15, 50),  # noqa: DTZ001
+            start=datetime(2026, 9, 28, 19, 0),
+            end=datetime(2026, 9, 29, 15, 50),
             origin=Place(label="LHR", name=None, code="LHR", locality=None, coord=None),
             destination=Place(
                 label="HND", name=None, code="HND", locality=None, coord=None

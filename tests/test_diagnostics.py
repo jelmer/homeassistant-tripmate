@@ -37,8 +37,9 @@ async def test_diagnostics_leave_out_where_the_trips_go(
             "stats": {
                 "trips": 4,
                 "nights": 18,
-                "flights": 3,
-                "distance_km": 13284,
+                "flights": {"journeys": 3, "unknown_route": 0, "distance_km": 13284},
+                "trains": {"journeys": 2, "unknown_route": 1, "distance_km": 57},
+                "travel": {"journeys": 5, "unknown_route": 1, "distance_km": 13341},
                 "countries": REDACTED,
             },
         },

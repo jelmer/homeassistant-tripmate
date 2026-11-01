@@ -18,7 +18,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .api import Stats, Trip
+from .api import Stats, Travelled, Trip
 from .coordinator import TripmateConfigEntry, TripmateCoordinator, TripmateData
 from .entity import TripmateEntity, reservation_attributes
 
@@ -70,6 +70,20 @@ TRIP_SENSORS = (
     ),
 )
 
+
+def _distance_sensor(
+    key: str, travelled: Callable[[Stats], Travelled]
+) -> StatsSensorDescription:
+    """Kilometres over one kind of travel, noting any journeys left unmeasured."""
+    return StatsSensorDescription(
+        key=key,
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        value_fn=lambda stats: travelled(stats).distance_km,
+        attributes_fn=lambda stats: {"unknown_route": travelled(stats).unknown_route},
+    )
+
+
 STATS_SENSORS = (
     StatsSensorDescription(
         key="trips",
@@ -84,14 +98,16 @@ STATS_SENSORS = (
     StatsSensorDescription(
         key="flights",
         native_unit_of_measurement="flights",
-        value_fn=lambda stats: stats.flights,
+        value_fn=lambda stats: stats.flights.journeys,
     ),
+    _distance_sensor("flight_distance", lambda stats: stats.flights),
     StatsSensorDescription(
-        key="distance",
-        device_class=SensorDeviceClass.DISTANCE,
-        native_unit_of_measurement=UnitOfLength.KILOMETERS,
-        value_fn=lambda stats: stats.distance_km,
+        key="train_journeys",
+        native_unit_of_measurement="journeys",
+        value_fn=lambda stats: stats.trains.journeys,
     ),
+    _distance_sensor("train_distance", lambda stats: stats.trains),
+    _distance_sensor("distance", lambda stats: stats.travel),
     StatsSensorDescription(
         key="countries",
         native_unit_of_measurement="countries",

@@ -97,15 +97,27 @@ class Reservation:
 
 
 @dataclass(frozen=True)
+class Travelled:
+    """Journeys of one kind of travel, and how far they went."""
+
+    journeys: int
+    # Journeys tripmate could not place both ends of. While this is not
+    # zero the distance is a lower bound.
+    unknown_route: int
+    distance_km: int
+
+
+@dataclass(frozen=True)
 class Stats:
     """Totals over every trip tripmate knows, past and future."""
 
     trips: int
     nights: int
-    flights: int
-    # Flights only, and only those between airports tripmate could place.
-    distance_km: int
-    # ISO 3166-1 alpha-2 codes of the countries flown from or to.
+    flights: Travelled
+    trains: Travelled
+    # Flights, trains, buses and ferries together.
+    travel: Travelled
+    # ISO 3166-1 alpha-2 codes of the countries any reservation touched.
     countries: list[str]
 
 
@@ -166,12 +178,21 @@ def _parse_reservation(raw: dict[str, Any]) -> Reservation:
     )
 
 
+def _parse_travelled(raw: dict[str, Any]) -> Travelled:
+    return Travelled(
+        journeys=raw["journeys"],
+        unknown_route=raw["unknown_route"],
+        distance_km=raw["distance_km"],
+    )
+
+
 def _parse_stats(raw: dict[str, Any]) -> Stats:
     return Stats(
         trips=raw["trips"],
         nights=raw["nights"],
-        flights=raw["flights"],
-        distance_km=raw["distance_km"],
+        flights=_parse_travelled(raw["flights"]),
+        trains=_parse_travelled(raw["trains"]),
+        travel=_parse_travelled(raw["travel"]),
         countries=list(raw["countries"]),
     )
 

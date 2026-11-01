@@ -19,6 +19,7 @@ from custom_components.tripmate.api import (
     Place,
     Reservation,
     Stats,
+    Travelled,
     Trip,
     TripmateAuthError,
     TripmateClient,
@@ -39,8 +40,9 @@ from . import (
 EXPECTED_STATS = Stats(
     trips=4,
     nights=18,
-    flights=3,
-    distance_km=13284,
+    flights=Travelled(journeys=3, unknown_route=0, distance_km=13284),
+    trains=Travelled(journeys=2, unknown_route=1, distance_km=57),
+    travel=Travelled(journeys=5, unknown_route=1, distance_km=13341),
     countries=["GB", "JP", "NL", "PT"],
 )
 
@@ -250,6 +252,8 @@ async def test_unexpected_reservations_are_an_error(
     "document",
     [
         {"trips": 4, "nights": 18, "flights": 3},
+        {**STATS, "flights": 3},
+        {**STATS, "trains": {"journeys": 2}},
         {**STATS, "countries": None},
         [STATS],
     ],

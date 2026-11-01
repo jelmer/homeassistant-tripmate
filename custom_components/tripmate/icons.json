@@ -38,6 +38,15 @@
       "flights": {
         "default": "mdi:airplane"
       },
+      "flight_distance": {
+        "default": "mdi:airplane-marker"
+      },
+      "train_journeys": {
+        "default": "mdi:train"
+      },
+      "train_distance": {
+        "default": "mdi:map-marker-distance"
+      },
       "distance": {
         "default": "mdi:map-marker-distance"
       },

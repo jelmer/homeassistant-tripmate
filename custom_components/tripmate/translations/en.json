@@ -85,8 +85,17 @@
       "flights": {
         "name": "Flights"
       },
-      "distance": {
+      "flight_distance": {
         "name": "Distance flown"
+      },
+      "train_journeys": {
+        "name": "Train journeys"
+      },
+      "train_distance": {
+        "name": "Distance by train"
+      },
+      "distance": {
+        "name": "Distance travelled"
       },
       "countries": {
         "name": "Countries"

@@ -1,4 +1,4 @@
-"""Tests for the tripmate API client."""
+"""Tests for the wayfare API client."""
 
 from __future__ import annotations
 
@@ -14,17 +14,17 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 from yarl import URL
 
-from custom_components.tripmate.api import (
+from custom_components.wayfare.api import (
     Coord,
     Place,
     Reservation,
     Stats,
     Travelled,
     Trip,
-    TripmateAuthError,
-    TripmateClient,
-    TripmateConnectionError,
-    TripmateResponseError,
+    WayfareAuthError,
+    WayfareClient,
+    WayfareConnectionError,
+    WayfareResponseError,
 )
 
 from . import (
@@ -50,13 +50,13 @@ EXPECTED_STATS = Stats(
 @pytest.fixture
 async def client(
     hass: HomeAssistant, aioclient_mock: AiohttpClientMocker
-) -> TripmateClient:
+) -> WayfareClient:
     # Depends on the mocker so the session is created after it is in place.
-    return TripmateClient(async_get_clientsession(hass), BASE_URL)
+    return WayfareClient(async_get_clientsession(hass), BASE_URL)
 
 
 async def test_trips(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
     mock_api(aioclient_mock, trips=[LISBON, JAPAN])
 
@@ -79,9 +79,9 @@ async def test_trips(
 
 
 async def test_a_trip_without_destinations(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
-    # What tripmate stores for a trip created empty.
+    # What wayfare stores for a trip created empty.
     trip = {
         "id": "2027-01-japan",
         "start": "2027-01-10",
@@ -125,7 +125,7 @@ def test_trip_title(name: str | None, destinations: list[str], title: str) -> No
 
 
 async def test_reservations(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
     mock_api(aioclient_mock, reservations=[FLIGHT_TO_TOKYO, HOTEL_IN_KYOTO])
 
@@ -136,7 +136,7 @@ async def test_reservations(
             summary="NH212: LHR to HND",
             provider="ANA",
             reservation_number="J7K2LM",
-            # Without a time zone, as tripmate only reports the local time.
+            # Without a time zone, as wayfare only reports the local time.
             start=datetime(2026, 9, 28, 19, 0),
             end=datetime(2026, 9, 29, 15, 50),
             origin=Place(label="LHR", name=None, code="LHR", locality=None, coord=None),
@@ -174,7 +174,7 @@ async def test_reservations(
     ],
 )
 async def test_reservations_are_asked_for_by_date(
-    client: TripmateClient,
+    client: WayfareClient,
     aioclient_mock: AiohttpClientMocker,
     start: date | None,
     end: date | None,
@@ -189,7 +189,7 @@ async def test_reservations_are_asked_for_by_date(
 
 
 async def test_stats(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
     mock_api(aioclient_mock)
 
@@ -197,13 +197,13 @@ async def test_stats(
 
 
 @pytest.mark.parametrize(
-    "base_url", ["http://tripmate.test/tripmate", "http://tripmate.test/tripmate/"]
+    "base_url", ["http://wayfare.test/wayfare", "http://wayfare.test/wayfare/"]
 )
 async def test_base_path_is_kept(
     hass: HomeAssistant, aioclient_mock: AiohttpClientMocker, base_url: str
 ) -> None:
-    mock_api(aioclient_mock, base_url="http://tripmate.test/tripmate")
-    client = TripmateClient(async_get_clientsession(hass), base_url)
+    mock_api(aioclient_mock, base_url="http://wayfare.test/wayfare")
+    client = WayfareClient(async_get_clientsession(hass), base_url)
 
     assert await client.stats() == EXPECTED_STATS
 
@@ -220,11 +220,11 @@ async def test_base_path_is_kept(
     ],
 )
 async def test_unexpected_trips_are_an_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker, document: Any
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker, document: Any
 ) -> None:
     mock_api(aioclient_mock, trips=document)
 
-    with pytest.raises(TripmateResponseError):
+    with pytest.raises(WayfareResponseError):
         await client.trips()
 
 
@@ -240,11 +240,11 @@ async def test_unexpected_trips_are_an_error(
     ],
 )
 async def test_unexpected_reservations_are_an_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker, document: Any
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker, document: Any
 ) -> None:
     mock_api(aioclient_mock, reservations=document)
 
-    with pytest.raises(TripmateResponseError):
+    with pytest.raises(WayfareResponseError):
         await client.reservations()
 
 
@@ -259,27 +259,27 @@ async def test_unexpected_reservations_are_an_error(
     ],
 )
 async def test_unexpected_stats_are_an_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker, document: Any
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker, document: Any
 ) -> None:
     mock_api(aioclient_mock, stats=document)
 
-    with pytest.raises(TripmateResponseError):
+    with pytest.raises(WayfareResponseError):
         await client.stats()
 
 
 async def test_an_http_error_is_an_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
     aioclient_mock.get(f"{BASE_URL}/api/v1/stats", status=502, text="Bad Gateway")
 
     with pytest.raises(
-        TripmateResponseError, match=r"^http://\S+/api/v1/stats returned HTTP 502$"
+        WayfareResponseError, match=r"^http://\S+/api/v1/stats returned HTTP 502$"
     ):
         await client.stats()
 
 
-async def test_what_tripmate_says_went_wrong_is_passed_on(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+async def test_what_wayfare_says_went_wrong_is_passed_on(
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
     aioclient_mock.get(
         f"{BASE_URL}/api/v1/stats",
@@ -288,17 +288,17 @@ async def test_what_tripmate_says_went_wrong_is_passed_on(
     )
 
     with pytest.raises(
-        TripmateResponseError, match="HTTP 500: reading trips: permission denied$"
+        WayfareResponseError, match="HTTP 500: reading trips: permission denied$"
     ):
         await client.stats()
 
 
 async def test_a_body_that_is_not_json_is_an_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
     aioclient_mock.get(f"{BASE_URL}/api/v1/stats", text="<html>hello</html>")
 
-    with pytest.raises(TripmateResponseError):
+    with pytest.raises(WayfareResponseError):
         await client.stats()
 
 
@@ -306,26 +306,26 @@ async def test_a_body_that_is_not_json_is_an_error(
     "error", [aiohttp.ClientConnectionError("refused"), TimeoutError()]
 )
 async def test_failing_to_connect_is_a_connection_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker, error: Exception
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker, error: Exception
 ) -> None:
     aioclient_mock.get(f"{BASE_URL}/api/v1/trips", exc=error)
 
-    with pytest.raises(TripmateConnectionError):
+    with pytest.raises(WayfareConnectionError):
         await client.trips()
 
 
 @pytest.mark.parametrize("status", [401, 403])
 async def test_refused_credentials_are_an_auth_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker, status: int
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker, status: int
 ) -> None:
     aioclient_mock.get(f"{BASE_URL}/api/v1/stats", status=status)
 
-    with pytest.raises(TripmateAuthError, match=f"HTTP {status}"):
+    with pytest.raises(WayfareAuthError, match=f"HTTP {status}"):
         await client.stats()
 
 
-async def test_tripmate_refusing_for_its_own_reasons_is_not_an_auth_error(
-    client: TripmateClient, aioclient_mock: AiohttpClientMocker
+async def test_wayfare_refusing_for_its_own_reasons_is_not_an_auth_error(
+    client: WayfareClient, aioclient_mock: AiohttpClientMocker
 ) -> None:
     aioclient_mock.get(
         f"{BASE_URL}/api/v1/trips",
@@ -334,15 +334,15 @@ async def test_tripmate_refusing_for_its_own_reasons_is_not_an_auth_error(
     )
 
     with pytest.raises(
-        TripmateResponseError, match="HTTP 403: no trips directory configured$"
+        WayfareResponseError, match="HTTP 403: no trips directory configured$"
     ) as raised:
         await client.trips()
 
-    assert not isinstance(raised.value, TripmateAuthError)
+    assert not isinstance(raised.value, WayfareAuthError)
 
 
 @pytest.fixture
-async def guarded_tripmate(
+async def guarded_wayfare(
     socket_enabled: None,
 ) -> AsyncGenerator[test_utils.TestServer]:
     """A real server that only answers `someone` with the password `secret`."""
@@ -368,21 +368,21 @@ async def guarded_tripmate(
     [(None, None), ("someone", None), ("someone", "wrong"), ("other", "secret")],
 )
 async def test_basic_auth_is_needed_where_a_proxy_asks_for_it(
-    guarded_tripmate: test_utils.TestServer, username: str | None, password: str | None
+    guarded_wayfare: test_utils.TestServer, username: str | None, password: str | None
 ) -> None:
     async with aiohttp.ClientSession() as session:
-        client = TripmateClient(
-            session, str(guarded_tripmate.make_url("")), username, password
+        client = WayfareClient(
+            session, str(guarded_wayfare.make_url("")), username, password
         )
 
-        with pytest.raises(TripmateAuthError):
+        with pytest.raises(WayfareAuthError):
             await client.stats()
 
 
-async def test_basic_auth_is_sent(guarded_tripmate: test_utils.TestServer) -> None:
+async def test_basic_auth_is_sent(guarded_wayfare: test_utils.TestServer) -> None:
     async with aiohttp.ClientSession() as session:
-        client = TripmateClient(
-            session, str(guarded_tripmate.make_url("")), "someone", "secret"
+        client = WayfareClient(
+            session, str(guarded_wayfare.make_url("")), "someone", "secret"
         )
 
         assert await client.stats() == EXPECTED_STATS

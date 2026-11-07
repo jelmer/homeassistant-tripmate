@@ -1,4 +1,4 @@
-"""Base entity for the tripmate integration."""
+"""Base entity for the wayfare integration."""
 
 from __future__ import annotations
 
@@ -11,16 +11,16 @@ from yarl import URL
 
 from .api import Place, Reservation, Trip
 from .const import DOMAIN
-from .coordinator import TripmateConfigEntry, TripmateCoordinator
+from .coordinator import WayfareConfigEntry, WayfareCoordinator
 
 
-class TripmateEntity(CoordinatorEntity[TripmateCoordinator]):
-    """An entity backed by a tripmate instance."""
+class WayfareEntity(CoordinatorEntity[WayfareCoordinator]):
+    """An entity backed by a wayfare instance."""
 
     _attr_has_entity_name = True
 
     def __init__(
-        self, coordinator: TripmateCoordinator, entry: TripmateConfigEntry, key: str
+        self, coordinator: WayfareCoordinator, entry: WayfareConfigEntry, key: str
     ) -> None:
         super().__init__(coordinator)
         self._base_url = URL(entry.data[CONF_URL])
@@ -34,7 +34,7 @@ class TripmateEntity(CoordinatorEntity[TripmateCoordinator]):
         )
 
     def _trip_url(self, trip: Trip) -> str:
-        """Return the address of the trip's page in tripmate."""
+        """Return the address of the trip's page in wayfare."""
         return str(self._base_url.joinpath("trip", trip.id))
 
     def _trip_attributes(self, trip: Trip) -> dict[str, Any]:

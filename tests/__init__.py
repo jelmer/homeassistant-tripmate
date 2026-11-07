@@ -1,4 +1,4 @@
-"""Tests for the tripmate integration."""
+"""Tests for the wayfare integration."""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ from typing import Any
 
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-BASE_URL = "http://tripmate.test:3000"
-ENTRY_ID = "tripmate_test"
+BASE_URL = "http://wayfare.test:3000"
+ENTRY_ID = "wayfare_test"
 
 # The tests run on this day: in the middle of the trip to Japan, with the
 # one to Lisbon behind and those to Rotterdam and Berlin ahead.
 TODAY = "2026-10-05 12:00:00+00:00"
 
-# Modelled on what a tripmate instance answers. It leaves out the fields a
+# Modelled on what a wayfare instance answers. It leaves out the fields a
 # trip or a place does not have.
 LISBON = {
     "id": "2026-05-lisbon",
@@ -120,7 +120,7 @@ def mock_api(
     stats: Any = STATS,
     base_url: str = BASE_URL,
 ) -> None:
-    """Make the mocked tripmate answer with these documents from now on.
+    """Make the mocked wayfare answer with these documents from now on.
 
     The reservations are served whatever range of dates is asked for.
     """

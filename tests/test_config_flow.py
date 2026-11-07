@@ -1,4 +1,4 @@
-"""Tests for the tripmate config flow."""
+"""Tests for the wayfare config flow."""
 
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ from homeassistant.data_entry_flow import FlowResultType
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.tripmate.config_flow import normalise_url
-from custom_components.tripmate.const import DOMAIN
+from custom_components.wayfare.config_flow import normalise_url
+from custom_components.wayfare.const import DOMAIN
 
 from . import BASE_URL, mock_api
 
@@ -23,9 +23,9 @@ from . import BASE_URL, mock_api
 @pytest.mark.parametrize(
     ("raw", "expected"),
     [
-        ("http://tripmate.test:3000", "http://tripmate.test:3000"),
-        ("http://tripmate.test:3000/", "http://tripmate.test:3000"),
-        ("  https://example.com/tripmate/ ", "https://example.com/tripmate"),
+        ("http://wayfare.test:3000", "http://wayfare.test:3000"),
+        ("http://wayfare.test:3000/", "http://wayfare.test:3000"),
+        ("  https://example.com/wayfare/ ", "https://example.com/wayfare"),
     ],
 )
 def test_normalise_url(raw: str, expected: str) -> None:
@@ -36,12 +36,12 @@ def test_normalise_url(raw: str, expected: str) -> None:
     "raw",
     [
         "",
-        "tripmate.test:3000",
-        "unix:/run/tripmate.sock",
-        "ftp://tripmate.test",
-        "http://tripmate.test/?q=lisbon",
-        "http://tripmate.test/#upcoming",
-        "http://someone:secret@tripmate.test",
+        "wayfare.test:3000",
+        "unix:/run/wayfare.sock",
+        "ftp://wayfare.test",
+        "http://wayfare.test/?q=lisbon",
+        "http://wayfare.test/#upcoming",
+        "http://someone:secret@wayfare.test",
     ],
 )
 def test_normalise_url_rejects_what_is_not_a_base_url(raw: str) -> None:
@@ -60,7 +60,7 @@ async def _submit(hass: HomeAssistant, url: str) -> config_entries.ConfigFlowRes
     )
 
 
-async def test_a_reachable_tripmate_creates_an_entry(
+async def test_a_reachable_wayfare_creates_an_entry(
     hass: HomeAssistant, aioclient_mock: AiohttpClientMocker
 ) -> None:
     mock_api(aioclient_mock)
@@ -68,18 +68,18 @@ async def test_a_reachable_tripmate_creates_an_entry(
     result = await _submit(hass, f"{BASE_URL}/")
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert result["title"] == "Tripmate"
+    assert result["title"] == "Wayfare"
     assert result["data"] == {CONF_URL: BASE_URL}
 
 
 async def test_an_invalid_url_is_reported_on_the_field(hass: HomeAssistant) -> None:
-    result = await _submit(hass, "tripmate.test:3000")
+    result = await _submit(hass, "wayfare.test:3000")
 
     assert result["type"] is FlowResultType.FORM
     assert result["errors"] == {CONF_URL: "invalid_url"}
 
 
-async def test_an_unreachable_tripmate_can_be_retried(
+async def test_an_unreachable_wayfare_can_be_retried(
     hass: HomeAssistant, aioclient_mock: AiohttpClientMocker
 ) -> None:
     aioclient_mock.get(
@@ -99,7 +99,7 @@ async def test_an_unreachable_tripmate_can_be_retried(
     assert result["type"] is FlowResultType.CREATE_ENTRY
 
 
-async def test_something_other_than_tripmate_is_refused(
+async def test_something_other_than_wayfare_is_refused(
     hass: HomeAssistant, aioclient_mock: AiohttpClientMocker
 ) -> None:
     aioclient_mock.get(f"{BASE_URL}/api/v1/stats", status=404)
@@ -110,7 +110,7 @@ async def test_something_other_than_tripmate_is_refused(
     assert result["errors"] == {"base": "invalid_response"}
 
 
-async def test_the_same_tripmate_is_not_added_twice(
+async def test_the_same_wayfare_is_not_added_twice(
     hass: HomeAssistant, config_entry: MockConfigEntry
 ) -> None:
     result = await _submit(hass, f"{BASE_URL}/")
@@ -124,7 +124,7 @@ async def test_reconfigure_points_the_entry_at_another_address(
     aioclient_mock: AiohttpClientMocker,
     config_entry: MockConfigEntry,
 ) -> None:
-    new_url = "http://tripmate.test/tripmate"
+    new_url = "http://wayfare.test/wayfare"
     mock_api(aioclient_mock, base_url=new_url)
 
     result = await config_entry.start_reconfigure_flow(hass)
@@ -187,7 +187,7 @@ async def test_reconfigure_refuses_the_address_of_another_entry(
     config_entry: MockConfigEntry,
 ) -> None:
     other_url = "http://other.test"
-    other = MockConfigEntry(domain=DOMAIN, title="Tripmate", data={CONF_URL: other_url})
+    other = MockConfigEntry(domain=DOMAIN, title="Wayfare", data={CONF_URL: other_url})
     other.add_to_hass(hass)
 
     result = await config_entry.start_reconfigure_flow(hass)
@@ -267,7 +267,7 @@ async def test_reconfigure_can_drop_the_credentials(
     mock_api(aioclient_mock)
     entry = MockConfigEntry(
         domain=DOMAIN,
-        title="Tripmate",
+        title="Wayfare",
         data={CONF_URL: BASE_URL, CONF_USERNAME: "someone", CONF_PASSWORD: "secret"},
     )
     entry.add_to_hass(hass)

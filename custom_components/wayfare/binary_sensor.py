@@ -1,4 +1,4 @@
-"""Binary sensor platform for tripmate."""
+"""Binary sensor platform for wayfare."""
 
 from __future__ import annotations
 
@@ -7,24 +7,24 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
-from .coordinator import TripmateConfigEntry, TripmateCoordinator
-from .entity import TripmateEntity
+from .coordinator import WayfareConfigEntry, WayfareCoordinator
+from .entity import WayfareEntity
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: TripmateConfigEntry,
+    entry: WayfareConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up tripmate binary sensor entities."""
+    """Set up wayfare binary sensor entities."""
     async_add_entities([TravellingSensor(entry.runtime_data, entry)])
 
 
-class TravellingSensor(TripmateEntity, BinarySensorEntity):
+class TravellingSensor(WayfareEntity, BinarySensorEntity):
     """Whether a trip is under way."""
 
     def __init__(
-        self, coordinator: TripmateCoordinator, entry: TripmateConfigEntry
+        self, coordinator: WayfareCoordinator, entry: WayfareConfigEntry
     ) -> None:
         super().__init__(coordinator, entry, "travelling")
 

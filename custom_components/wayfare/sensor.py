@@ -1,4 +1,4 @@
-"""Sensor platform for tripmate."""
+"""Sensor platform for wayfare."""
 
 from __future__ import annotations
 
@@ -19,8 +19,8 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from .api import Stats, Travelled, Trip
-from .coordinator import TripmateConfigEntry, TripmateCoordinator, TripmateData
-from .entity import TripmateEntity, reservation_attributes
+from .coordinator import WayfareConfigEntry, WayfareCoordinator, WayfareData
+from .entity import WayfareEntity, reservation_attributes
 
 UNIT_TRIPS = "trips"
 
@@ -29,7 +29,7 @@ UNIT_TRIPS = "trips"
 class TripSensorDescription(SensorEntityDescription):
     """A sensor about one trip: the one under way, or the next one."""
 
-    trip_fn: Callable[[TripmateData, date], Trip | None]
+    trip_fn: Callable[[WayfareData, date], Trip | None]
     value_fn: Callable[[Trip], str | date]
     # Whether the attributes describe the trip and list its reservations.
     detailed: bool = False
@@ -37,7 +37,7 @@ class TripSensorDescription(SensorEntityDescription):
 
 @dataclass(frozen=True, kw_only=True)
 class StatsSensorDescription(SensorEntityDescription):
-    """A sensor reporting one of tripmate's totals."""
+    """A sensor reporting one of wayfare's totals."""
 
     value_fn: Callable[[Stats], int]
     attributes_fn: Callable[[Stats], dict[str, Any]] | None = None
@@ -46,26 +46,26 @@ class StatsSensorDescription(SensorEntityDescription):
 TRIP_SENSORS = (
     TripSensorDescription(
         key="current_trip",
-        trip_fn=TripmateData.current_trip,
+        trip_fn=WayfareData.current_trip,
         value_fn=lambda trip: trip.title,
         detailed=True,
     ),
     TripSensorDescription(
         key="current_trip_end",
         device_class=SensorDeviceClass.DATE,
-        trip_fn=TripmateData.current_trip,
+        trip_fn=WayfareData.current_trip,
         value_fn=lambda trip: trip.end,
     ),
     TripSensorDescription(
         key="next_trip",
-        trip_fn=TripmateData.next_trip,
+        trip_fn=WayfareData.next_trip,
         value_fn=lambda trip: trip.title,
         detailed=True,
     ),
     TripSensorDescription(
         key="next_trip_start",
         device_class=SensorDeviceClass.DATE,
-        trip_fn=TripmateData.next_trip,
+        trip_fn=WayfareData.next_trip,
         value_fn=lambda trip: trip.start,
     ),
 )
@@ -119,10 +119,10 @@ STATS_SENSORS = (
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: TripmateConfigEntry,
+    entry: WayfareConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up tripmate sensor entities."""
+    """Set up wayfare sensor entities."""
     coordinator = entry.runtime_data
     entities: list[SensorEntity] = [
         TripSensor(coordinator, entry, description) for description in TRIP_SENSORS
@@ -134,7 +134,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class TripSensor(TripmateEntity, SensorEntity):
+class TripSensor(WayfareEntity, SensorEntity):
     """Something about the trip under way or the next one, if there is one."""
 
     entity_description: TripSensorDescription
@@ -143,8 +143,8 @@ class TripSensor(TripmateEntity, SensorEntity):
 
     def __init__(
         self,
-        coordinator: TripmateCoordinator,
-        entry: TripmateConfigEntry,
+        coordinator: WayfareCoordinator,
+        entry: WayfareConfigEntry,
         description: TripSensorDescription,
     ) -> None:
         super().__init__(coordinator, entry, description.key)
@@ -177,7 +177,7 @@ class TripSensor(TripmateEntity, SensorEntity):
         }
 
 
-class UpcomingTripsSensor(TripmateEntity, SensorEntity):
+class UpcomingTripsSensor(WayfareEntity, SensorEntity):
     """The number of trips that have yet to start."""
 
     _attr_native_unit_of_measurement = UNIT_TRIPS
@@ -185,7 +185,7 @@ class UpcomingTripsSensor(TripmateEntity, SensorEntity):
     _unrecorded_attributes = frozenset({"trips"})
 
     def __init__(
-        self, coordinator: TripmateCoordinator, entry: TripmateConfigEntry
+        self, coordinator: WayfareCoordinator, entry: WayfareConfigEntry
     ) -> None:
         super().__init__(coordinator, entry, "upcoming_trips")
 
@@ -204,16 +204,16 @@ class UpcomingTripsSensor(TripmateEntity, SensorEntity):
         return {"trips": [self._trip_attributes(trip) for trip in self._trips]}
 
 
-class StatsSensor(TripmateEntity, SensorEntity):
-    """A total over every trip tripmate knows."""
+class StatsSensor(WayfareEntity, SensorEntity):
+    """A total over every trip wayfare knows."""
 
     entity_description: StatsSensorDescription
     _attr_state_class = SensorStateClass.TOTAL
 
     def __init__(
         self,
-        coordinator: TripmateCoordinator,
-        entry: TripmateConfigEntry,
+        coordinator: WayfareCoordinator,
+        entry: WayfareConfigEntry,
         description: StatsSensorDescription,
     ) -> None:
         super().__init__(coordinator, entry, description.key)

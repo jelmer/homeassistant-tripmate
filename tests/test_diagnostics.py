@@ -1,4 +1,4 @@
-"""Tests for the tripmate diagnostics."""
+"""Tests for the wayfare diagnostics."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from homeassistant.components.diagnostics import REDACTED
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.tripmate.diagnostics import async_get_config_entry_diagnostics
+from custom_components.wayfare.diagnostics import async_get_config_entry_diagnostics
 
 
 def _trip(start: date, end: date, name: str | None = None) -> dict[str, object]:

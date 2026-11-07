@@ -1,4 +1,4 @@
-"""Fixtures for the tripmate integration tests."""
+"""Fixtures for the wayfare integration tests."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from pytest_homeassistant_custom_component.common import (
 )
 from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClientMocker
 
-from custom_components.tripmate.const import DOMAIN, UPDATE_INTERVAL
+from custom_components.wayfare.const import DOMAIN, UPDATE_INTERVAL
 
 from . import BASE_URL, ENTRY_ID, TODAY, mock_api
 
@@ -43,10 +43,10 @@ def today(freezer: FrozenDateTimeFactory) -> None:
 async def config_entry(
     hass: HomeAssistant, aioclient_mock: AiohttpClientMocker
 ) -> MockConfigEntry:
-    """A tripmate entry, set up against the canned documents."""
+    """A wayfare entry, set up against the canned documents."""
     mock_api(aioclient_mock)
     entry = MockConfigEntry(
-        domain=DOMAIN, title="Tripmate", data={CONF_URL: BASE_URL}, entry_id=ENTRY_ID
+        domain=DOMAIN, title="Wayfare", data={CONF_URL: BASE_URL}, entry_id=ENTRY_ID
     )
     entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(entry.entry_id)

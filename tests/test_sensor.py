@@ -1,4 +1,4 @@
-"""Tests for the tripmate sensors."""
+"""Tests for the wayfare sensors."""
 
 from __future__ import annotations
 
@@ -109,22 +109,22 @@ def _state(hass: HomeAssistant, entity_id: str) -> tuple[str, dict[str, Any]]:
 
 
 async def test_current_trip(hass: HomeAssistant, config_entry: MockConfigEntry) -> None:
-    assert _state(hass, "sensor.tripmate_current_trip") == (
+    assert _state(hass, "sensor.wayfare_current_trip") == (
         "Autumn in Japan",
         {**JAPAN_ATTRIBUTES, "reservations": [FLIGHT_ATTRIBUTES, HOTEL_ATTRIBUTES]},
     )
-    assert _state(hass, "sensor.tripmate_current_trip_end") == (
+    assert _state(hass, "sensor.wayfare_current_trip_end") == (
         "2026-10-09",
         {"device_class": "date"},
     )
 
 
 async def test_next_trip(hass: HomeAssistant, config_entry: MockConfigEntry) -> None:
-    assert _state(hass, "sensor.tripmate_next_trip") == (
+    assert _state(hass, "sensor.wayfare_next_trip") == (
         "Trip to Rotterdam",
         {**ROTTERDAM_ATTRIBUTES, "reservations": [TRAIN_ATTRIBUTES]},
     )
-    assert _state(hass, "sensor.tripmate_next_trip_start") == (
+    assert _state(hass, "sensor.wayfare_next_trip_start") == (
         "2026-11-02",
         {"device_class": "date"},
     )
@@ -133,7 +133,7 @@ async def test_next_trip(hass: HomeAssistant, config_entry: MockConfigEntry) -> 
 async def test_upcoming_trips(
     hass: HomeAssistant, config_entry: MockConfigEntry
 ) -> None:
-    assert _state(hass, "sensor.tripmate_upcoming_trips") == (
+    assert _state(hass, "sensor.wayfare_upcoming_trips") == (
         "2",
         {
             "trips": [ROTTERDAM_ATTRIBUTES, BERLIN_ATTRIBUTES],
@@ -146,11 +146,11 @@ async def test_upcoming_trips(
 @pytest.mark.parametrize(
     ("entity_id", "value", "attributes"),
     [
-        ("sensor.tripmate_total_trips", "4", {"unit_of_measurement": "trips"}),
-        ("sensor.tripmate_nights_away", "18", {"unit_of_measurement": "nights"}),
-        ("sensor.tripmate_flights", "3", {"unit_of_measurement": "flights"}),
+        ("sensor.wayfare_total_trips", "4", {"unit_of_measurement": "trips"}),
+        ("sensor.wayfare_nights_away", "18", {"unit_of_measurement": "nights"}),
+        ("sensor.wayfare_flights", "3", {"unit_of_measurement": "flights"}),
         (
-            "sensor.tripmate_distance_flown",
+            "sensor.wayfare_distance_flown",
             "13284",
             {
                 "unit_of_measurement": "km",
@@ -159,12 +159,12 @@ async def test_upcoming_trips(
             },
         ),
         (
-            "sensor.tripmate_train_journeys",
+            "sensor.wayfare_train_journeys",
             "2",
             {"unit_of_measurement": "journeys"},
         ),
         (
-            "sensor.tripmate_distance_by_train",
+            "sensor.wayfare_distance_by_train",
             "57",
             {
                 "unit_of_measurement": "km",
@@ -173,7 +173,7 @@ async def test_upcoming_trips(
             },
         ),
         (
-            "sensor.tripmate_distance_travelled",
+            "sensor.wayfare_distance_travelled",
             "13341",
             {
                 "unit_of_measurement": "km",
@@ -182,7 +182,7 @@ async def test_upcoming_trips(
             },
         ),
         (
-            "sensor.tripmate_countries",
+            "sensor.wayfare_countries",
             "4",
             {
                 "unit_of_measurement": "countries",
@@ -211,12 +211,12 @@ async def test_between_trips_there_is_no_current_trip(
 
     await tick()
 
-    assert _state(hass, "sensor.tripmate_current_trip") == (STATE_UNKNOWN, {})
-    assert _state(hass, "sensor.tripmate_current_trip_end") == (
+    assert _state(hass, "sensor.wayfare_current_trip") == (STATE_UNKNOWN, {})
+    assert _state(hass, "sensor.wayfare_current_trip_end") == (
         STATE_UNKNOWN,
         {"device_class": "date"},
     )
-    assert _state(hass, "sensor.tripmate_next_trip")[0] == "Trip to Rotterdam"
+    assert _state(hass, "sensor.wayfare_next_trip")[0] == "Trip to Rotterdam"
 
 
 async def test_with_nothing_booked_there_is_no_next_trip(
@@ -229,12 +229,12 @@ async def test_with_nothing_booked_there_is_no_next_trip(
 
     await tick()
 
-    assert _state(hass, "sensor.tripmate_next_trip") == (STATE_UNKNOWN, {})
-    assert _state(hass, "sensor.tripmate_next_trip_start") == (
+    assert _state(hass, "sensor.wayfare_next_trip") == (STATE_UNKNOWN, {})
+    assert _state(hass, "sensor.wayfare_next_trip_start") == (
         STATE_UNKNOWN,
         {"device_class": "date"},
     )
-    assert _state(hass, "sensor.tripmate_upcoming_trips") == (
+    assert _state(hass, "sensor.wayfare_upcoming_trips") == (
         "0",
         {"trips": [], "state_class": "measurement", "unit_of_measurement": "trips"},
     )
@@ -249,12 +249,12 @@ async def test_a_trip_ends_after_its_last_day(
     freezer.move_to("2026-10-09 22:00:00+00:00")
     await tick()
 
-    assert _state(hass, "sensor.tripmate_current_trip")[0] == "Autumn in Japan"
+    assert _state(hass, "sensor.wayfare_current_trip")[0] == "Autumn in Japan"
 
     freezer.move_to("2026-10-10 12:00:00+00:00")
     await tick()
 
-    assert _state(hass, "sensor.tripmate_current_trip") == (STATE_UNKNOWN, {})
+    assert _state(hass, "sensor.wayfare_current_trip") == (STATE_UNKNOWN, {})
 
 
 async def test_a_trip_starts_on_its_first_day_in_the_configured_time_zone(
@@ -269,11 +269,11 @@ async def test_a_trip_starts_on_its_first_day_in_the_configured_time_zone(
 
     await tick()
 
-    assert _state(hass, "sensor.tripmate_current_trip") == (
+    assert _state(hass, "sensor.wayfare_current_trip") == (
         "Trip to Rotterdam",
         {**ROTTERDAM_ATTRIBUTES, "reservations": [TRAIN_ATTRIBUTES]},
     )
-    assert _state(hass, "sensor.tripmate_next_trip")[0] == "Trip to Berlin and Prague"
+    assert _state(hass, "sensor.wayfare_next_trip")[0] == "Trip to Berlin and Prague"
 
 
 async def test_of_overlapping_trips_the_one_begun_last_is_current(
@@ -293,7 +293,7 @@ async def test_of_overlapping_trips_the_one_begun_last_is_current(
 
     await tick()
 
-    state, attributes = _state(hass, "sensor.tripmate_current_trip")
+    state, attributes = _state(hass, "sensor.wayfare_current_trip")
     assert (state, attributes["reservations"]) == ("Trip to Osaka", [])
 
 
@@ -309,13 +309,13 @@ async def test_a_reservation_of_a_trip_that_is_over_is_left_out(
 
     await tick()
 
-    _, attributes = _state(hass, "sensor.tripmate_current_trip")
+    _, attributes = _state(hass, "sensor.wayfare_current_trip")
     assert attributes["reservations"] == [FLIGHT_ATTRIBUTES]
-    _, attributes = _state(hass, "sensor.tripmate_next_trip")
+    _, attributes = _state(hass, "sensor.wayfare_next_trip")
     assert attributes["reservations"] == []
 
 
-async def test_sensors_follow_tripmate(
+async def test_sensors_follow_wayfare(
     hass: HomeAssistant,
     aioclient_mock: AiohttpClientMocker,
     tick: Callable[[], Awaitable[None]],
@@ -325,11 +325,11 @@ async def test_sensors_follow_tripmate(
 
     await tick()
 
-    assert _state(hass, "sensor.tripmate_next_trip")[0] == "Trip to Berlin and Prague"
-    assert _state(hass, "sensor.tripmate_upcoming_trips")[0] == "1"
+    assert _state(hass, "sensor.wayfare_next_trip")[0] == "Trip to Berlin and Prague"
+    assert _state(hass, "sensor.wayfare_upcoming_trips")[0] == "1"
 
 
-async def test_sensors_are_unavailable_while_tripmate_is_down(
+async def test_sensors_are_unavailable_while_wayfare_is_down(
     hass: HomeAssistant,
     aioclient_mock: AiohttpClientMocker,
     tick: Callable[[], Awaitable[None]],
@@ -340,9 +340,9 @@ async def test_sensors_are_unavailable_while_tripmate_is_down(
 
     await tick()
 
-    assert _state(hass, "sensor.tripmate_current_trip")[0] == STATE_UNAVAILABLE
+    assert _state(hass, "sensor.wayfare_current_trip")[0] == STATE_UNAVAILABLE
 
     mock_api(aioclient_mock)
     await tick()
 
-    assert _state(hass, "sensor.tripmate_current_trip")[0] == "Autumn in Japan"
+    assert _state(hass, "sensor.wayfare_current_trip")[0] == "Autumn in Japan"

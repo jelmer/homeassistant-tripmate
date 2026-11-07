@@ -1,4 +1,4 @@
-"""Tests for what the tripmate coordinator asks for."""
+"""Tests for what the wayfare coordinator asks for."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Config flow for the tripmate integration."""
+"""Config flow for the wayfare integration."""
 
 from __future__ import annotations
 
@@ -21,10 +21,10 @@ from homeassistant.helpers.selector import (
 from yarl import URL
 
 from .api import (
-    TripmateAuthError,
-    TripmateClient,
-    TripmateConnectionError,
-    TripmateResponseError,
+    WayfareAuthError,
+    WayfareClient,
+    WayfareConnectionError,
+    WayfareResponseError,
 )
 from .const import DOMAIN
 
@@ -45,7 +45,7 @@ CREDENTIALS_SCHEMA = vol.Schema(
 
 
 def normalise_url(raw: str) -> str:
-    """Return the canonical form of a tripmate base URL.
+    """Return the canonical form of a wayfare base URL.
 
     Raises ValueError for anything that is not a plain http(s) URL.
     """
@@ -74,15 +74,15 @@ def credentials(user_input: Mapping[str, Any]) -> dict[str, str]:
     return {CONF_USERNAME: username, CONF_PASSWORD: password}
 
 
-class TripmateConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for tripmate."""
+class WayfareConfigFlow(ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for wayfare."""
 
     VERSION = 1
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Ask for the address of the tripmate web UI."""
+        """Ask for the address of the wayfare web UI."""
         return await self._async_step_url("user", user_input)
 
     async def async_step_reconfigure(
@@ -100,7 +100,7 @@ class TripmateConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_reauth_confirm(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Ask for credentials the proxy in front of tripmate accepts."""
+        """Ask for credentials the proxy in front of wayfare accepts."""
         entry = self._get_reauth_entry()
         errors: dict[str, str] = {}
 
@@ -146,7 +146,7 @@ class TripmateConfigFlow(ConfigFlow, domain=DOMAIN):
                         self._get_reconfigure_entry(), data=data
                     )
                 else:
-                    return self.async_create_entry(title="Tripmate", data=data)
+                    return self.async_create_entry(title="Wayfare", data=data)
         elif reconfiguring:
             user_input = dict(self._get_reconfigure_entry().data)
 
@@ -158,8 +158,8 @@ class TripmateConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
     async def _async_check(self, data: Mapping[str, str]) -> str | None:
-        """Try to reach tripmate, returning the error to show if that fails."""
-        client = TripmateClient(
+        """Try to reach wayfare, returning the error to show if that fails."""
+        client = WayfareClient(
             async_get_clientsession(self.hass),
             data[CONF_URL],
             data.get(CONF_USERNAME),
@@ -167,10 +167,10 @@ class TripmateConfigFlow(ConfigFlow, domain=DOMAIN):
         )
         try:
             await client.stats()
-        except TripmateAuthError:
+        except WayfareAuthError:
             return "invalid_auth"
-        except TripmateConnectionError:
+        except WayfareConnectionError:
             return "cannot_connect"
-        except TripmateResponseError:
+        except WayfareResponseError:
             return "invalid_response"
         return None

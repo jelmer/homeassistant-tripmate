@@ -16,7 +16,7 @@ jobs:
         uses: hacs/action@main
         with:
           category: integration
-          # TODO(jelmer): Add custom_components/tripmate/brand/icon.png and
+          # TODO(jelmer): Add custom_components/wayfare/brand/icon.png and
           # drop this.
           ignore: brands
 

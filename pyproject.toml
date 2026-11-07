@@ -1,4 +1,4 @@
-# Home Assistant copies `custom_components/tripmate` into a config
+# Home Assistant copies `custom_components/wayfare` into a config
 # directory, so there is nothing here to build or install. This file carries
 # the tool configuration and the dependencies a test run needs.
 

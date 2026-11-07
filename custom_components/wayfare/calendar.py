@@ -1,4 +1,4 @@
-"""Calendar platform for tripmate."""
+"""Calendar platform for wayfare."""
 
 from __future__ import annotations
 
@@ -10,28 +10,28 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.util import dt as dt_util
 
 from .api import Trip
-from .coordinator import TripmateConfigEntry, TripmateCoordinator
-from .entity import TripmateEntity
+from .coordinator import WayfareConfigEntry, WayfareCoordinator
+from .entity import WayfareEntity
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: TripmateConfigEntry,
+    entry: WayfareConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up the tripmate calendar."""
+    """Set up the wayfare calendar."""
     async_add_entities([TripCalendar(entry.runtime_data, entry)])
 
 
-class TripCalendar(TripmateEntity, CalendarEntity):
+class TripCalendar(WayfareEntity, CalendarEntity):
     """Every trip, as an event that lasts the days it covers.
 
-    The reservations are left out: tripmate reports when they are in the
+    The reservations are left out: wayfare reports when they are in the
     local time of wherever they happen, without saying what time zone that is.
     """
 
     def __init__(
-        self, coordinator: TripmateCoordinator, entry: TripmateConfigEntry
+        self, coordinator: WayfareCoordinator, entry: WayfareConfigEntry
     ) -> None:
         super().__init__(coordinator, entry, "trips")
 

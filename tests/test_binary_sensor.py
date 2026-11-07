@@ -1,4 +1,4 @@
-"""Tests for the tripmate binary sensor."""
+"""Tests for the wayfare binary sensor."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClien
 
 from . import BASE_URL
 
-ENTITY_ID = "binary_sensor.tripmate_travelling"
+ENTITY_ID = "binary_sensor.wayfare_travelling"
 
 
 def _state(hass: HomeAssistant) -> str:
@@ -45,7 +45,7 @@ async def test_travelling_is_off_between_trips(
     assert _state(hass) == STATE_ON
 
 
-async def test_travelling_is_unavailable_while_tripmate_is_down(
+async def test_travelling_is_unavailable_while_wayfare_is_down(
     hass: HomeAssistant,
     aioclient_mock: AiohttpClientMocker,
     tick: Callable[[], Awaitable[None]],

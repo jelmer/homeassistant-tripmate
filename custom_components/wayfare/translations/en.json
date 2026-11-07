@@ -2,34 +2,34 @@
   "config": {
     "step": {
       "user": {
-        "title": "Connect to tripmate",
-        "description": "Enter the address of the tripmate web UI, including any base path. For example: {example_url}",
+        "title": "Connect to wayfare",
+        "description": "Enter the address of the wayfare web UI, including any base path. For example: {example_url}",
         "data": {
           "url": "URL",
           "username": "Username",
           "password": "Password"
         },
         "data_description": {
-          "username": "Only needed when tripmate sits behind a reverse proxy that asks for HTTP basic auth.",
+          "username": "Only needed when wayfare sits behind a reverse proxy that asks for HTTP basic auth.",
           "password": "The password that goes with the username."
         }
       },
       "reconfigure": {
-        "title": "Reconfigure tripmate",
-        "description": "Enter the new address of the tripmate web UI, including any base path. For example: {example_url}",
+        "title": "Reconfigure wayfare",
+        "description": "Enter the new address of the wayfare web UI, including any base path. For example: {example_url}",
         "data": {
           "url": "URL",
           "username": "Username",
           "password": "Password"
         },
         "data_description": {
-          "username": "Only needed when tripmate sits behind a reverse proxy that asks for HTTP basic auth.",
+          "username": "Only needed when wayfare sits behind a reverse proxy that asks for HTTP basic auth.",
           "password": "The password that goes with the username."
         }
       },
       "reauth_confirm": {
-        "title": "Sign in to tripmate again",
-        "description": "The credentials for {url} were refused. Enter ones the reverse proxy in front of tripmate accepts.",
+        "title": "Sign in to wayfare again",
+        "description": "The credentials for {url} were refused. Enter ones the reverse proxy in front of wayfare accepts.",
         "data": {
           "username": "Username",
           "password": "Password"
@@ -40,12 +40,12 @@
       "invalid_url": "Enter an http:// or https:// URL without credentials or a query string.",
       "username_required": "A password needs a username to go with it.",
       "invalid_auth": "The username and password were refused.",
-      "cannot_connect": "Unable to connect to tripmate at that address.",
-      "invalid_response": "Something answered at that address, but it does not look like tripmate."
+      "cannot_connect": "Unable to connect to wayfare at that address.",
+      "invalid_response": "Something answered at that address, but it does not look like wayfare."
     },
     "abort": {
-      "already_configured": "This tripmate instance is already configured.",
-      "reconfigure_successful": "The tripmate address has been updated.",
+      "already_configured": "This wayfare instance is already configured.",
+      "reconfigure_successful": "The wayfare address has been updated.",
       "reauth_successful": "The credentials have been updated."
     }
   },

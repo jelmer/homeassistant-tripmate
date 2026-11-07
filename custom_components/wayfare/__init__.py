@@ -1,4 +1,4 @@
-"""The tripmate integration."""
+"""The wayfare integration."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ from homeassistant.const import CONF_PASSWORD, CONF_URL, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .api import TripmateClient
-from .coordinator import TripmateConfigEntry, TripmateCoordinator
+from .api import WayfareClient
+from .coordinator import WayfareConfigEntry, WayfareCoordinator
 
 PLATFORMS: list[Platform] = [
     Platform.BINARY_SENSOR,
@@ -16,15 +16,15 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: TripmateConfigEntry) -> bool:
-    """Set up tripmate from a config entry."""
-    client = TripmateClient(
+async def async_setup_entry(hass: HomeAssistant, entry: WayfareConfigEntry) -> bool:
+    """Set up wayfare from a config entry."""
+    client = WayfareClient(
         async_get_clientsession(hass),
         entry.data[CONF_URL],
         entry.data.get(CONF_USERNAME),
         entry.data.get(CONF_PASSWORD),
     )
-    coordinator = TripmateCoordinator(hass, entry, client)
+    coordinator = WayfareCoordinator(hass, entry, client)
     await coordinator.async_config_entry_first_refresh()
 
     entry.runtime_data = coordinator
@@ -33,6 +33,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: TripmateConfigEntry) -> 
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: TripmateConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: WayfareConfigEntry) -> bool:
     """Unload a config entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)

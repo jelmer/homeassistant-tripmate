@@ -1,4 +1,4 @@
-"""DataUpdateCoordinator for tripmate."""
+"""DataUpdateCoordinator for wayfare."""
 
 from __future__ import annotations
 
@@ -16,24 +16,24 @@ from .api import (
     Reservation,
     Stats,
     Trip,
-    TripmateAuthError,
-    TripmateClient,
-    TripmateError,
+    WayfareAuthError,
+    WayfareClient,
+    WayfareError,
 )
 from .const import DOMAIN, UPDATE_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
-type TripmateConfigEntry = ConfigEntry[TripmateCoordinator]
+type WayfareConfigEntry = ConfigEntry[WayfareCoordinator]
 
 
 @dataclass(frozen=True)
-class TripmateData:
-    """One poll's worth of tripmate state."""
+class WayfareData:
+    """One poll's worth of wayfare state."""
 
     # Every trip, past ones included, in the order they start.
     trips: list[Trip]
-    # By trip id, in the order tripmate lists them, which is by date. Only for
+    # By trip id, in the order wayfare lists them, which is by date. Only for
     # trips that had not ended on the day of the poll.
     reservations: dict[str, list[Reservation]]
     stats: Stats
@@ -65,11 +65,11 @@ def _by_trip(
     return grouped
 
 
-class TripmateCoordinator(DataUpdateCoordinator[TripmateData]):
-    """Coordinator to fetch trips, reservations and statistics from tripmate."""
+class WayfareCoordinator(DataUpdateCoordinator[WayfareData]):
+    """Coordinator to fetch trips, reservations and statistics from wayfare."""
 
     def __init__(
-        self, hass: HomeAssistant, entry: TripmateConfigEntry, client: TripmateClient
+        self, hass: HomeAssistant, entry: WayfareConfigEntry, client: WayfareClient
     ) -> None:
         super().__init__(
             hass,
@@ -80,9 +80,9 @@ class TripmateCoordinator(DataUpdateCoordinator[TripmateData]):
         )
         self.client = client
 
-    async def _async_update_data(self) -> TripmateData:
+    async def _async_update_data(self) -> WayfareData:
         try:
-            # One at a time, and the stats first: tripmate files the trips it
+            # One at a time, and the stats first: wayfare files the trips it
             # has inferred while working those out, and only lists what it
             # has filed.
             stats = await self.client.stats()
@@ -94,11 +94,11 @@ class TripmateCoordinator(DataUpdateCoordinator[TripmateData]):
                 if open_trips
                 else []
             )
-        except TripmateAuthError as err:
+        except WayfareAuthError as err:
             raise ConfigEntryAuthFailed(str(err)) from err
-        except TripmateError as err:
+        except WayfareError as err:
             raise UpdateFailed(str(err)) from err
-        return TripmateData(
+        return WayfareData(
             trips=trips,
             reservations=_by_trip(reservations, open_trips),
             stats=stats,

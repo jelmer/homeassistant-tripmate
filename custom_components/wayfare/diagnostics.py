@@ -1,4 +1,4 @@
-"""Diagnostics support for tripmate."""
+"""Diagnostics support for wayfare."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Any
 from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.core import HomeAssistant
 
-from .coordinator import TripmateConfigEntry
+from .coordinator import WayfareConfigEntry
 
 # Where someone went, which is of no use in a bug report. The id of a trip
 # gives the same away.
@@ -21,7 +21,7 @@ TO_REDACT = {
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: TripmateConfigEntry
+    hass: HomeAssistant, entry: WayfareConfigEntry
 ) -> dict[str, Any]:
     """Return what the last poll fetched, without the identifying parts."""
     coordinator = entry.runtime_data

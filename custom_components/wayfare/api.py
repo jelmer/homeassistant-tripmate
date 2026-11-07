@@ -1,4 +1,4 @@
-"""Client for tripmate's JSON API."""
+"""Client for wayfare's JSON API."""
 
 from __future__ import annotations
 
@@ -14,25 +14,25 @@ from yarl import URL
 REQUEST_TIMEOUT = aiohttp.ClientTimeout(total=30)
 
 
-class TripmateError(Exception):
-    """Base class for errors talking to tripmate."""
+class WayfareError(Exception):
+    """Base class for errors talking to wayfare."""
 
 
-class TripmateConnectionError(TripmateError):
-    """Raised when tripmate could not be reached."""
+class WayfareConnectionError(WayfareError):
+    """Raised when wayfare could not be reached."""
 
 
-class TripmateAuthError(TripmateError):
-    """Raised when whatever guards tripmate does not accept our credentials."""
+class WayfareAuthError(WayfareError):
+    """Raised when whatever guards wayfare does not accept our credentials."""
 
 
-class TripmateResponseError(TripmateError):
-    """Raised when the answer is not what tripmate's API promises."""
+class WayfareResponseError(WayfareError):
+    """Raised when the answer is not what wayfare's API promises."""
 
 
 @dataclass(frozen=True)
 class Trip:
-    """A trip as stored by tripmate and listed by `/api/v1/trips`."""
+    """A trip as stored by wayfare and listed by `/api/v1/trips`."""
 
     id: str
     # Only set for a trip that was named by hand.
@@ -45,7 +45,7 @@ class Trip:
     def title(self) -> str:
         """What to call the trip: its name, or else where it goes.
 
-        tripmate's own pages collapse several stops in one country into
+        wayfare's own pages collapse several stops in one country into
         "Trip to the US". The API does not say what country a destination is
         in, so here the destinations are always listed.
         """
@@ -68,7 +68,7 @@ class Coord:
 class Place:
     """An airport, station, hotel or venue on a reservation."""
 
-    # What tripmate's timeline prints: the code, name or locality.
+    # What wayfare's timeline prints: the code, name or locality.
     label: str
     name: str | None
     code: str | None
@@ -87,7 +87,7 @@ class Reservation:
     summary: str
     provider: str | None
     reservation_number: str | None
-    # The wall-clock time where it happens, which is all tripmate reports: a
+    # The wall-clock time where it happens, which is all wayfare reports: a
     # datetime here is naive. A booking for a day rather than a time has a date.
     start: date | datetime
     end: date | datetime | None
@@ -101,7 +101,7 @@ class Travelled:
     """Journeys of one kind of travel, and how far they went."""
 
     journeys: int
-    # Journeys tripmate could not place both ends of. While this is not
+    # Journeys wayfare could not place both ends of. While this is not
     # zero the distance is a lower bound.
     unknown_route: int
     distance_km: int
@@ -109,7 +109,7 @@ class Travelled:
 
 @dataclass(frozen=True)
 class Stats:
-    """Totals over every trip tripmate knows, past and future."""
+    """Totals over every trip wayfare knows, past and future."""
 
     trips: int
     nights: int
@@ -142,7 +142,7 @@ def _optional[T](parse: Callable[[Any], T], raw: Any) -> T | None:
 def _parse_trip(raw: dict[str, Any]) -> Trip:
     return Trip(
         id=raw["id"],
-        # tripmate leaves out what a trip does not have.
+        # wayfare leaves out what a trip does not have.
         name=raw.get("name"),
         destinations=list(raw.get("destinations", [])),
         start=date.fromisoformat(raw["start"]),
@@ -207,9 +207,9 @@ def _parse_list[T](parse: Callable[[dict[str, Any]], T]) -> Callable[[Any], list
 
 
 async def _error_message(response: aiohttp.ClientResponse) -> str | None:
-    """Return what tripmate says went wrong, if this is tripmate saying so.
+    """Return what wayfare says went wrong, if this is wayfare saying so.
 
-    tripmate reports its own errors as `{"error": "..."}`.
+    wayfare reports its own errors as `{"error": "..."}`.
     """
     try:
         body = await response.json()
@@ -220,8 +220,8 @@ async def _error_message(response: aiohttp.ClientResponse) -> str | None:
     return body["error"]
 
 
-class TripmateClient:
-    """Client for a tripmate instance."""
+class WayfareClient:
+    """Client for a wayfare instance."""
 
     def __init__(
         self,
@@ -232,7 +232,7 @@ class TripmateClient:
     ) -> None:
         """Create a client.
 
-        tripmate has no authentication of its own. `username` and `password`
+        wayfare has no authentication of its own. `username` and `password`
         are for a reverse proxy in front of it that asks for HTTP basic auth.
         """
         self._session = session
@@ -244,9 +244,9 @@ class TripmateClient:
         )
 
     async def trips(self) -> list[Trip]:
-        """Fetch the trips tripmate has stored.
+        """Fetch the trips wayfare has stored.
 
-        tripmate files newly inferred trips while it answers `reservations`
+        wayfare files newly inferred trips while it answers `reservations`
         or `stats`, not this, so ask one of those first to see the trips that
         bookings which just arrived belong to.
         """
@@ -275,7 +275,7 @@ class TripmateClient:
         try:
             return parse(body)
         except (KeyError, TypeError, ValueError) as err:
-            raise TripmateResponseError(
+            raise WayfareResponseError(
                 f"{url} returned an unexpected document: {err!r}"
             ) from err
 
@@ -287,21 +287,21 @@ class TripmateClient:
                 if response.status == HTTPStatus.OK:
                     return await response.json()
                 reason = await _error_message(response)
-                # tripmate itself answers 403 when it has nowhere to store
+                # wayfare itself answers 403 when it has nowhere to store
                 # trips, which no other credentials would fix.
                 if response.status == HTTPStatus.UNAUTHORIZED or (
                     response.status == HTTPStatus.FORBIDDEN and reason is None
                 ):
-                    raise TripmateAuthError(
+                    raise WayfareAuthError(
                         f"{url} refused the credentials (HTTP {response.status})"
                     )
                 message = f"{url} returned HTTP {response.status}"
                 if reason is not None:
                     message = f"{message}: {reason}"
-                raise TripmateResponseError(message)
+                raise WayfareResponseError(message)
         except aiohttp.ClientResponseError as err:
-            raise TripmateResponseError(f"{url} did not return JSON: {err}") from err
+            raise WayfareResponseError(f"{url} did not return JSON: {err}") from err
         except (aiohttp.ClientError, TimeoutError) as err:
-            raise TripmateConnectionError(f"Unable to reach {url}: {err}") from err
+            raise WayfareConnectionError(f"Unable to reach {url}: {err}") from err
         except ValueError as err:
-            raise TripmateResponseError(f"{url} returned invalid JSON: {err}") from err
+            raise WayfareResponseError(f"{url} returned invalid JSON: {err}") from err

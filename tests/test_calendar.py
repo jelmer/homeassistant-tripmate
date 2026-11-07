@@ -1,4 +1,4 @@
-"""Tests for the tripmate calendar."""
+"""Tests for the wayfare calendar."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from pytest_homeassistant_custom_component.test_util.aiohttp import AiohttpClien
 
 from . import BASE_URL, LISBON, mock_api
 
-ENTITY_ID = "calendar.tripmate_trips"
+ENTITY_ID = "calendar.wayfare_trips"
 
 LISBON_EVENT = {
     "start": "2026-05-14",
